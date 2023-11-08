@@ -70,7 +70,7 @@ public class ConferenceRoomService {
 
 		if (maintenance.isBookingOverMaintenancePeriod(startTime, endTime)) {
 
-			String message = ErrorMessages.MAINTENANCE_PERIOD_CONFLICT + " "
+			String message = ErrorMessages.NO_ROOMS_AVAILABLE_DURING_MAINTENANCE_PERIOD + " "
 					+ maintenance.getFormattedMaintenancePeriods();
 			throw new MaintenancePeriodConflictException(message);
 		}
