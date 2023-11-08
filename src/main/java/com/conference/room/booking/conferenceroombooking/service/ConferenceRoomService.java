@@ -1,20 +1,24 @@
 package com.conference.room.booking.conferenceroombooking.service;
 
+import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.conference.room.booking.conferenceroombooking.entity.Booking;
 import com.conference.room.booking.conferenceroombooking.entity.Room;
+import com.conference.room.booking.conferenceroombooking.exception.InvalidNumberOfAttendessException;
+import com.conference.room.booking.conferenceroombooking.exception.MaintenancePeriodConflictException;
+import com.conference.room.booking.conferenceroombooking.exception.NoRoomsAvailableException;
+import com.conference.room.booking.conferenceroombooking.maintenance.Maintenance;
+import com.conference.room.booking.conferenceroombooking.message.ErrorMessages;
 import com.conference.room.booking.conferenceroombooking.model.BookedRoom;
 import com.conference.room.booking.conferenceroombooking.repository.BookingRepository;
-import com.conference.room.booking.conferenceroombooking.repository.RoomRepository;
 
 import lombok.AllArgsConstructor;
 
@@ -22,96 +26,82 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ConferenceRoomService {
 
-	private final RoomRepository roomRepository;
-
 	private final BookingRepository bookingRepository;
+
+	private final Maintenance maintenance;
 
 	public Optional<BookedRoom> bookRoom(LocalTime startTime, LocalTime endTime, int attendees) {
 
-		var rooms = roomRepository.findAll();
-		var bookings = bookingRepository.findBookingsByStartTimeAndEndTime(Time.valueOf(startTime),
-				Time.valueOf(endTime));
-
-		Map<Long, Room> availableRooms = new HashMap<>();
-		
-		for (var room : rooms) {
-
-			boolean roomFound = false;
-			for (var booking : bookings) {
-
-				if (booking.getRoom().getRoomId() == room.getRoomId()) {
-
-					roomFound = true;
-					break;
-				}
-			}
-
-			if (!roomFound) {
-				availableRooms.put(room.getRoomId(), room);
-			}
+		if (attendees <= 1) {
+			throw new InvalidNumberOfAttendessException(ErrorMessages.INVALID_NUMBER_OF_ATTENDEES);
 		}
-		
-		if(availableRooms.isEmpty()) {
-			
-			return Optional.empty();
+
+		if (maintenance.isBookingOverMaintenancePeriod(startTime, endTime)) {
+
+			String message = ErrorMessages.MAINTENANCE_PERIOD_CONFLICT + " "
+					+ maintenance.getFormattedMaintenancePeriods();
+			throw new MaintenancePeriodConflictException(message);
 		}
-		
-		long bestFit = -1;
-		int difference = Integer.MAX_VALUE;
-		for(var room : rooms) {
-			
-			if(availableRooms.containsKey(room.getRoomId())) {
-				int d = room.getSize() - attendees;
-				
-				if(d > 0 && d < difference) {
-					difference = d;
-					bestFit = room.getRoomId();
-				}
-			}			
+
+		var availableRooms = bookingRepository.findAvailableRoomsByStartTimeAndEndTime(Date.valueOf(LocalDate.now()),
+				Time.valueOf(startTime), Time.valueOf(endTime));
+
+		if (availableRooms.isEmpty()) {
+
+			throw new NoRoomsAvailableException(ErrorMessages.NO_ROOMS_AVAILABLE);
 		}
-		
-		if(bestFit != -1) {
-			
-			var r = availableRooms.get(bestFit);
-			
-			Optional<BookedRoom> bookedRoom = Optional.of(
-					new BookedRoom(r.getRoom(), startTime, endTime));
-			
-			Booking booking = new Booking(r, Time.valueOf(startTime), Time.valueOf(endTime));
+
+		var bestRoom = getBestRoomForAttendees(availableRooms, attendees);
+
+		if (bestRoom.isPresent()) {
+
+			Booking booking = new Booking(bestRoom.get(), Time.valueOf(startTime), Time.valueOf(endTime));
 			bookingRepository.save(booking);
-			
+
+			Optional<BookedRoom> bookedRoom = Optional.of(new BookedRoom(bestRoom.get().getRoom(), startTime, endTime));
+
 			return bookedRoom;
 		}
-		
-		return Optional.empty();
+
+		throw new NoRoomsAvailableException(ErrorMessages.NO_ROOMS_AVAILABLE_FOR_NUMBER_OF_ATTENDEES);
 	}
 
 	public List<String> getAvailableRooms(LocalTime startTime, LocalTime endTime) {
 
-		var rooms = roomRepository.findAll();
-		var bookings = bookingRepository.findBookingsByStartTimeAndEndTime(Time.valueOf(startTime),
-				Time.valueOf(endTime));
+		if (maintenance.isBookingOverMaintenancePeriod(startTime, endTime)) {
 
-		List<String> availableRooms = new ArrayList<>();
+			String message = ErrorMessages.MAINTENANCE_PERIOD_CONFLICT + " "
+					+ maintenance.getFormattedMaintenancePeriods();
+			throw new MaintenancePeriodConflictException(message);
+		}
 
-		for (var room : rooms) {
+		var availableRooms = bookingRepository.findAvailableRoomsByStartTimeAndEndTime(Date.valueOf(LocalDate.now()),
+				Time.valueOf(startTime), Time.valueOf(endTime));
 
-			boolean roomFound = false;
-			for (var booking : bookings) {
+		if (availableRooms.isEmpty()) {
 
-				if (booking.getRoom().getRoomId() == room.getRoomId()) {
+			throw new NoRoomsAvailableException(ErrorMessages.NO_ROOMS_AVAILABLE);
+		}
 
-					roomFound = true;
-					break;
-				}
-			}
+		return availableRooms.stream().map(room -> room.getRoom()).collect(Collectors.toList());
+	}
 
-			if (!roomFound) {
-				availableRooms.add(room.getRoom());
+	private Optional<Room> getBestRoomForAttendees(List<Room> availableRooms, int attendees) {
+
+		Optional<Room> bestRoom = Optional.empty();
+		int difference = Integer.MAX_VALUE;
+
+		for (var availableRoom : availableRooms) {
+
+			int localDifference = availableRoom.getSize() - attendees;
+
+			if (localDifference >= 0 && localDifference < difference) {
+				difference = localDifference;
+				bestRoom = Optional.of(availableRoom);
 			}
 		}
 
-		return availableRooms;
+		return bestRoom;
 	}
 
 }

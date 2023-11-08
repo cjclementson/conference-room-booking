@@ -1,6 +1,8 @@
 package com.conference.room.booking.conferenceroombooking.entity;
 
+import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +19,7 @@ public class Booking {
 	
 	public Booking(Room room, Time startTime, Time endTime) {
 		this.room = room;
+		this.date = Date.valueOf(LocalDate.now());
 		this.startTime = startTime;
 		this.endTime = endTime;
 	}
@@ -28,6 +31,8 @@ public class Booking {
 	@ManyToOne
 	@JoinColumn(name = "roomId")
 	private Room room;
+	
+	private Date date;
 	
 	private Time startTime;
 	
