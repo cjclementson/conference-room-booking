@@ -35,6 +35,7 @@
 <h3>Steps</h3>
 
 <p>See the curl commands below for examples on calling the availability end point to see which rooms are available for the specified time range.</p>
+
 ```
 curl "http://localhost:8000/api/v1/rooms/availability?startTime=08:00&endTime=08:30"
 curl "http://localhost:8000/api/v1/rooms/availability?startTime=09:00&endTime=09:30"
@@ -42,6 +43,7 @@ curl "http://localhost:8000/api/v1/rooms/availability?startTime=14:00&endTime=15
 ```
 
 <p>See the curl commands below for examples on calling the booking end point to book a room for the specified time range and number of attendees.</p>
+
 ```
 curl -d '{"startTime": "07:00", "endTime": "08:00", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"
 curl -d '{"startTime": "09:00", "endTime": "09:30", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"
