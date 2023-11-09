@@ -52,3 +52,30 @@ curl -d '{"startTime": "18:00", "endTime": "19:00", "attendees": 6}' -H 'Content
 
 <h3>Steps</h3>
 <p>The application.yml contains a section called conference-room. This section allows you to modify the rooms and maintenance periods.</p>
+
+```
+conference-room:
+  room-details:
+    - 
+      name: Amaze
+      size: 3
+    - 
+      name: Beauty
+      size: 7
+    - 
+      name: Inspire
+      size: 12
+    - 
+      name: Strive
+      size: 20
+  maintenance-periods:
+    -
+      startTime: "09:00"
+      endTime: "09:15"
+    -
+      startTime: "13:00"
+      endTime: "13:15"
+    -
+      startTime: "17:00"
+      endTime: "17:15"
+```
