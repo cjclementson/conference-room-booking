@@ -4,8 +4,8 @@
 
 <h3>Steps</h3>
 <ol>
-<li>Get the <a href="https://github.com/cjclementson/conference-room-booking">source</a>: git clone https://github.com/cjclementson/conference-room-booking.git</li>
-<li>Install <a href="https://www.oracle.com/java/technologies/downloads/">JDK 17</a></li>
+<li>Get the source code: git clone https://github.com/cjclementson/conference-room-booking.git</li>
+<li>Install <a href="https://www.oracle.com/java/technologies/downloads/#java17">JDK 17</a></li>
 <li>Insatll <a href="https://maven.apache.org/download.cgi">Maven</a></li>
 <li>Make sure maven is on the your path.</li>
 </ol>
@@ -42,11 +42,12 @@
 </ul>
 
 <p>See the curl commands below for examples on calling the booking end point to book a room for the specified time range and number of attendees.</p>
-<ul>
-<li>curl -d '{"startTime": "07:00", "endTime": "08:00", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"</li>
-<li>curl -d '{"startTime": "09:00", "endTime": "09:30", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"</li>
-<li>curl -d '{"startTime": "18:00", "endTime": "19:00", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"</li>
-</ul>
+
+```
+curl -d '{"startTime": "07:00", "endTime": "08:00", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"
+curl -d '{"startTime": "09:00", "endTime": "09:30", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"
+curl -d '{"startTime": "18:00", "endTime": "19:00", "attendees": 6}' -H 'Content-Type: application/json' -X POST "http://localhost:8000/api/v1/rooms/booking"
+```
 
 <h2>Configurable properties</h2>
 
