@@ -1,5 +1,9 @@
 <h1>Conference Room Booking API</h1>
 
+<p>
+This API allows users to query for available conference rooms for a given time range and book rooms for specified time ranges, subject to maintenance periods.
+</p>
+
 <h2>Set up environment</h2>
 
 <h3>Steps</h3>
