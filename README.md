@@ -27,7 +27,7 @@ Linux or Mac: ./build-run.sh
 
 By default, the application will run on http://localhost:8000</p>
 
-<h2>Using the API<h2>
+<h2>Using the API</h2>
 
 <h3>Pre requisites</h3>
 <p>Curl or Postman is installed.</p>
@@ -35,7 +35,7 @@ By default, the application will run on http://localhost:8000</p>
 <h3>Goal</h3>
 <p>test</p>
 
-<h2>Configurable properties<h2>
+<h2>Configurable properties</h2>
 
 <h3>Goal</h3>
 <p>test</p>
