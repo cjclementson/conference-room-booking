@@ -22,20 +22,35 @@ public class Maintenance {
 
 			var maintenancePeriodStartTime = maintenancePeriod.getStartTime();
 			var maintenancePeriodEndTime = maintenancePeriod.getEndTime();
-
+			
+			/* 
+			 *  Maintenance ST					  ET
+			 * 				|----------------------| 
+			 *  Booking	 |-----|
+			 */
 			if (startTime.compareTo(maintenancePeriodStartTime) <= 0
-					&& endTime.compareTo(maintenancePeriodStartTime) >= 0) {
+					&& endTime.compareTo(maintenancePeriodStartTime) > 0) {
 
 				return true;
 			}
-
+			
+			/* 
+			 *  Maintenance ST					  ET
+			 * 				|----------------------| 
+			 *  Booking	 		|------------|
+			 */			
 			if (startTime.compareTo(maintenancePeriodStartTime) >= 0
 					&& endTime.compareTo(maintenancePeriodEndTime) <= 0) {
 
 				return true;
 
 			}
-
+			
+			 /* 
+			 *  Maintenance ST					  ET
+			 * 				|----------------------| 
+			 *  Booking	 						|-----|
+			 */
 			if (startTime.compareTo(maintenancePeriodStartTime) >= 0 
 					&& endTime.compareTo(maintenancePeriodEndTime) >= 0
 					&& startTime.compareTo(maintenancePeriodEndTime) < 0) {
