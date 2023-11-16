@@ -10,7 +10,7 @@ This API allows users to query for available conference rooms for a given time r
 <ol>
 <li>Get the source code: git clone https://github.com/cjclementson/conference-room-booking.git</li>
 <li>Install <a href="https://www.oracle.com/java/technologies/downloads/#java17">JDK 17</a></li>
-<li>Insatll <a href="https://maven.apache.org/download.cgi">Maven</a></li>
+<li>Install <a href="https://maven.apache.org/download.cgi">Maven</a></li>
 <li>Make sure maven is on the your path.</li>
 </ol>
 
